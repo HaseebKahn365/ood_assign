@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:ood_assign/addContactActivity.dart';
 import 'package:ood_assign/add_item_screen.dart';

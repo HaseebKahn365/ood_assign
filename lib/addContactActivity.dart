@@ -148,10 +148,170 @@ class _AdContactmActivityState extends State<AddContactActivity> {
                   itemCount: inventory.contacts.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Text(inventory.contacts[index].name),
-                      subtitle: Text(inventory.contacts[index].email),
-                    );
+                        onLongPress: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditContact(contact: inventory.contacts[index]),
+                            ),
+                          );
+                        },
+                        title: Text(inventory.contacts[index].name),
+                        subtitle: Text(inventory.contacts[index].email),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            setState(() {
+                              inventory.contacts.removeAt(index);
+                            });
+                          },
+                        ));
                   },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EditContact extends StatefulWidget {
+  final Contact contact;
+
+  const EditContact({super.key, required this.contact});
+
+  @override
+  State<EditContact> createState() => _EditContactState();
+}
+
+class _EditContactState extends State<EditContact> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      //similar appbar as the add contact activity
+      appBar: AppBar(
+        toolbarHeight: 80.0,
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        title: Text('Edit Contact',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 25.0,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 1.15,
+            )),
+      ),
+
+      //similar to the add contact activity, but the text fields should be pre-filled with the contact details
+
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(19.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Add a text field for the item title
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 100.0,
+                      child: Text(
+                        'Name: ',
+                        style: TextStyle(fontSize: 15.0),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          labelText: 'Contact Name',
+                        ),
+                        controller: TextEditingController(text: widget.contact.name),
+                        onChanged: (value) {
+                          setState(() {
+                            widget.contact.name = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                // similarlly add text fields for the maker, description,
+                const SizedBox(height: 20.0),
+
+                // Add a text field for the email
+
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 100.0,
+                      child: Text(
+                        'Email: ',
+                        style: TextStyle(fontSize: 15.0),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Contact Email',
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        controller: TextEditingController(text: widget.contact.email),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter an email';
+                          } else if (!RegExp(
+                            r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+',
+                          ).hasMatch(value)) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            widget.contact.email = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Add a BIG rounded container for icon or image based on selected image
+                const SizedBox(height: 20.0),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.black54),
+                    ),
+                    onPressed: () {
+                      //save the activity and go back to the previous screen
+                      try {
+                        Navigator.pop(context);
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(e.toString()),
+                          ),
+                        );
+                      }
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(Icons.save), // Add your desired icon here
+                        Text('Save'),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
